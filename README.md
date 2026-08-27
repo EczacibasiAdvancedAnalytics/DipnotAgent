@@ -8,6 +8,10 @@ Her yanıtta cevabın dayandığı dokümanlar `[1]`, `[2]` biçiminde metin iç
 verilir; atıflar tıklanabilir ve altta doküman kartları (başlık, tür, güncelleme tarihi,
 alaka skoru, SharePoint bağlantısı, kullanılan metin parçası) listelenir.
 
+Yayında ziyaretçi Azure / Search / OpenAI secret girmez: anahtarlar Streamlit Cloud
+Secrets'ta (sunucu tarafında) durur. Giriş ekranı varsa yalnızca uygulama kullanıcı adı
+ve şifresini ister.
+
 ## İki çalışma modu
 
 Uygulama aynı bilgi tabanını iki farklı motorla kullanabilir. Motoru yan menüden veya
@@ -287,28 +291,34 @@ src/
 
 ## Streamlit Community Cloud yayın
 
+Ziyaretçi Azure / Search / OpenAI anahtarı **girmez.** Bu değerler sunucu tarafında
+(Streamlit Cloud Secrets) durur; uygulama `st.secrets` okur. Giriş formu varsa yalnızca
+uygulama kullanıcı adı ve şifresini ister — onlar da Secrets'tadır, tarayıcıda key
+alanı yoktur. Siz Cloud'da Secrets'ı **bir kez** yapıştırırsınız; sonra uygulama
+anahtarlar yüklü halde ayakta kalır.
+
 Uygulamayı [share.streamlit.io](https://share.streamlit.io) üzerinde ücretsiz
 barındırabilirsiniz. Streamlit sizin GitHub hesabınıza bağlanır; bu araç tarayıcıdan
 sizin yerinize giriş yapamaz.
 
 ### 1) Kodu GitHub'a alın (private repo)
 
-API anahtarları ve kurum içi indeks adları için **private** depo kullanın. Public
-repoda kaynak kod görünür; secrets panele yazılsa bile yanlışlıkla anahtar sızdırma
-riski artar.
+Depo adı: **DipnotAgent**. API anahtarları ve kurum içi indeks adları için **private**
+depo kullanın. Public repoda kaynak kod görünür; secrets panele yazılsa bile
+yanlışlıkla anahtar sızdırma riski artar.
 
 ```powershell
 git init
 git add .
 git commit -m "Streamlit Cloud için secrets desteği ve yayın notları."
 # GitHub CLI varsa:
-gh repo create dipnot --private --source=. --remote=origin --push
+gh repo create DipnotAgent --private --source=. --remote=origin --push
 ```
 
-`gh` yoksa GitHub'da **New repository** (Private) oluşturup:
+`gh` yoksa GitHub'da **New repository** (Private, ad: `DipnotAgent`) oluşturup:
 
 ```powershell
-git remote add origin https://github.com/<kullanici>/<repo>.git
+git remote add origin https://github.com/<kullanici>/DipnotAgent.git
 git branch -M main
 git push -u origin main
 ```
@@ -320,11 +330,12 @@ git push -u origin main
 
 1. [https://share.streamlit.io](https://share.streamlit.io) adresine gidin ve GitHub ile giriş yapın.
 2. **New app** (Create app) seçin.
-3. Repository, branch (`main`) ve Main file path: `app.py` seçin.
+3. Repository (`DipnotAgent`), branch (`main`) ve Main file path: `app.py` seçin.
 4. Advanced settings:
    - Python version: **3.11** (repodaki `runtime.txt` de `python-3.11` der).
-   - **Secrets:** `.streamlit/secrets.toml.example` içeriğini yapıştırıp gerçek değerleri doldurun.
-5. Deploy.
+   - **Secrets:** yereldeki `.streamlit/secrets.toml` (gitignore'da; `.env`'den üretilir)
+     içeriğini yapıştırın. Şablon için `.streamlit/secrets.toml.example`.
+5. Deploy. Ziyaretçi bu panoyu görmez; yalnızca sizin hesabınız doldurur.
 
 ### 3) Cloud'da doldurulacak secret'lar
 
@@ -363,7 +374,8 @@ Cloud'da bu konuda bir uyarı gösterir.
 
 - Repoyu **private** tutun.
 - API anahtarlarını ve `APP_AUTH_PASSWORD` değerini yalnızca Streamlit Secrets'a yazın;
-  README, commit veya public URL'de paylaşmayın.
+  README, commit veya public URL'de paylaşmayın. Ziyaretçi bu panoyu görmez ve Azure
+  anahtarı girmez.
 - Login secret'larını boş bırakırsanız Cloud URL'sini bilen herkes indeksteki tüm
   dokümanları sorabilir.
 
