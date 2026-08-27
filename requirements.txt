@@ -1,0 +1,10 @@
+streamlit==1.62.0
+azure-search-documents==11.6.0
+azure-identity==1.25.1
+azure-core==1.35.1
+openai==2.30.0
+python-dotenv==1.1.1
+
+# Microsoft Foundry Agent Service backend (RAG_BACKEND=foundry)
+azure-ai-projects==1.0.0
+azure-ai-agents==1.1.0
